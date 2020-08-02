@@ -2,6 +2,7 @@ import time
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.common import exceptions as sel_exc
 
 from Features.Common.SeleniumExtension import SeleniumExtension, Locator, Element
 
@@ -40,6 +41,7 @@ class Playground:
                                            "2]/lightning-primitive-datatable-iedit-panel/section/div["
                                            "1]/form/lightning-primitive-datatable-iedit-input-wrapper//lightning"
                                            "-timepicker//input")
+
 
     @property
     def full_playground_iframe(self):
@@ -92,41 +94,58 @@ class Playground:
         if value is not None:
             Element(self.time_value_input).clear_and_send_keys(value)
 
+    @property
+    def browser(self):
+        return self.driver.capabilities["browserName"].capitalize()
+
     def edit_row(self, new_row_data):
         self.driver.switch_to.frame(self.full_playground_iframe)
         kwargs = self.sel_ext.get_kwargs_from_locator(self.FULL_PLAYGROUND_PREVIEW_TABLE_IFRAME_LOCATOR)
         self.sel_ext.wait_for_element(60, **kwargs)
         self.driver.switch_to.frame(self.full_playground_preview_table_iframe)
         row_element = Element(self.full_playground_data_table[new_row_data["id"]]).we
-        dict_of_td_editable_columns = {3: "Website",
+        dict_of_td_editable_columns = {2: "Label",
+                                       3: "Website",
                                        4: "Phone",
                                        5: "CloseAt",
                                        6: "Balance"}
         i = 0
+        after_edit_data_values = {}
+        before_edit_data_values = {}
         for element in row_element.find_elements(By.XPATH, "th | td"):
             if element.tag_name == "th" and "Label" in new_row_data.keys():
+                before_edit_data_values.update({"Label": element.text.split("\n")[0]})
                 value_to_edit = new_row_data["Label"]
-                self.edit_table_column_values(element, value_to_edit)
+                element_edited_validator = self.edit_table_column_values(element, value_to_edit)
+                if element_edited_validator:
+                    after_edit_data_values.update({"Label": value_to_edit})
 
             elif element.tag_name == "td" and "Edit" in element.text:
 
                 if dict_of_td_editable_columns[i] in new_row_data.keys():
+                    before_edit_data_values.update({dict_of_td_editable_columns[i]: element.text.split("\n")[0]})
                     if i == 5:
                         date_value = new_row_data[dict_of_td_editable_columns[i]].split("-")[0]
                         time_value = new_row_data[dict_of_td_editable_columns[i]].split("-")[1]
-                        self.edit_table_column_values(element, date_value, time_value, i)
+                        element_edited_validator = self.edit_table_column_values(element, date_value, time_value, i)
+                        value_to_edit = date_value + "-" + time_value
                     else:
+                        before_edit_data_values.update({dict_of_td_editable_columns[i]: element.text.split("\n")[0]})
                         value_to_edit = new_row_data[dict_of_td_editable_columns[i]]
-                        self.edit_table_column_values(element, value_to_edit)
+                        element_edited_validator = self.edit_table_column_values(element, value_to_edit)
 
+                    if element_edited_validator:
+                        after_edit_data_values.update({dict_of_td_editable_columns[i]: value_to_edit})
             i += 1
+
+        return before_edit_data_values, after_edit_data_values
 
     def edit_table_column_values(self, element, value_to_edit, time_value=None, i=None):
         self.lightning_primitive_cell_factory = \
             element.find_element(By.XPATH, "lightning-primitive-cell-factory")
         self.element_edit_button = \
             element.find_element(By.XPATH, "lightning-primitive-cell-factory/span/button")
-        self.element_edit_button.click()
+        Element(self.element_edit_button).click(self.driver)
         self.driver.execute_script("arguments[0].setAttribute('aria-selected', arguments[1]);",
                                    Element(self.lightning_primitive_cell_factory).we, "true")
 
@@ -138,6 +157,12 @@ class Playground:
                 self.date_picker_input = value_to_edit
                 self.time_value_input = time_value
                 self.time_value_input.send_keys(Keys.TAB)
-                self.time_value_input.send_keys(Keys.TAB)
-                time.sleep(1)
+                try:
+                    self.time_value_input.send_keys(Keys.TAB)
+                except sel_exc.NoSuchElementException:
+                        pass
             time.sleep(2)
+
+            return True
+
+

@@ -1,34 +1,23 @@
 from behave import *
 from selenium import webdriver
 
+from Features.Common.Utils.Assert import TestAssert
+from Features.environment import select_driver_from_config, open_web_page
 from Pages.LightningWebComponents.Datatable import Datatable
 from Pages.Menus.NavigationMenu import NavigationMenu
 from Pages.Menus.SideBarMenu import SideBarMenu
 from Pages.Tools.Lightning.Playground import Playground
 
 
-def select_driver_from_config(context):
-    browser = context.config.userdata["browser"]
-    # Default driver will be Firefox Driver
-    driver = webdriver.Firefox()
-    if browser == "Chrome":
-        driver = webdriver.Chrome()
-    elif browser == "Edge":
-        driver = webdriver.Edge()
-    elif browser == "Safari":
-        driver = webdriver.Safari()
-
-    return driver
-
-
 @given('I launch any browser')
 def get_driver(context):
-    context.driver = select_driver_from_config(context)
+    context.driver = use_fixture(select_driver_from_config, context)
 
 
 @when('I open salesforce developers application')
 def open_salesforce(context):
-    context.driver.get("https://developer.salesforce.com/docs/component-library/documentation/en/48.0/lwc")
+    use_fixture(open_web_page,context, "https://developer.salesforce.com/docs/component-library/documentation/en/48.0"
+                                       "/lwc")
 
 
 @when('Navigate to Component Reference Tab')
@@ -60,16 +49,29 @@ def click_playground_button(context):
       'close_at}" "{balance}"')
 def edit_all_row_records(context, id_value, label, website, phone, close_at, balance):
     id_to_edit = int(id_value.split(":")[1]) - 1
-    new_row_data = {"id": id_to_edit,
-                    "Label": label,
-                    "Website": website,
-                    "Phone": phone,
-                    "CloseAt": close_at,
-                    "Balance": balance
-                    }
-    Playground(context.driver).edit_row(new_row_data)
+    context.old_row_data = ({"id": id_to_edit})
+    context.actual_new_data = ({"id": id_to_edit})
+    context.new_row_data = {"id": id_to_edit,
+                            "Label": label,
+                            "Website": website,
+                            "Phone": phone,
+                            "CloseAt": close_at,
+                            "Balance": balance
+                            }
+    row_data = Playground(context.driver).edit_row(context.new_row_data)
+    context.old_row_data.update(row_data[0])
+    context.actual_new_data.update(row_data[1])
 
 
 @then('I must validate the changes I have done in the table are present')
-def step_impl(context):
-    pass
+def assert_data(context):
+    test_assert = TestAssert()
+    # Assert Data in Datatable is the one user sent
+    test_assert.test_assert_entered_row_data\
+        (context.new_row_data, context.actual_new_data,
+         f"Data sent from test to modify row id {context.new_row_data['id'] + 1} "
+                                                  f"is not on Datatable or it's incomplete")
+    test_assert.test_assert_row_data_has_changed\
+        (context.actual_new_data, context.old_row_data,
+         f"Wrong or incomplete data change on row {context.new_row_data['id'] + 1}")
+    context.driver.close()

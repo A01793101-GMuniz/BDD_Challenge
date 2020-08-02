@@ -11,7 +11,7 @@ class NavigationMenu:
         self.PAGE_LOCATOR = Locator(self.driver, By.XPATH, "//a[contains(text(),'All Rights reserved')]")
         self.NAVIGATION_BAR_ID = Locator(self.driver, By.ID, "skip-target-nav-3")
         self.COMPONENT_REFERENCE_MENU_LOCATOR = Locator(self.driver, By.XPATH, "//span[contains(text(),'Component "
-                                                                          "Reference')]/..")
+                                                                               "Reference')]/..")
         self.DEVELOPER_GUIDE_MENU_LOCATOR = Locator(self.driver, By.XPATH, "//span[contains(text(),'Developer "
                                                                            "Guide')]/..")
         self.LOCKER_CONSOLE_MENU_LOCATOR = Locator(self.driver, By.XPATH,
@@ -33,7 +33,7 @@ class NavigationMenu:
 
     def click_comp_ref_menu(self):
         kwargs = self.sel_ext.get_kwargs_from_locator(self.COMPONENT_REFERENCE_MENU_LOCATOR)
-        self.sel_ext.wait_and_click(**kwargs)
+        self.sel_ext.wait_and_click(self.driver, **kwargs)
 
     @property
     def developer_guide_menu(self):
@@ -41,7 +41,7 @@ class NavigationMenu:
 
     def click_guide_menu(self):
         kwargs = self.sel_ext.get_kwargs_from_locator(self.DEVELOPER_GUIDE_MENU_LOCATOR)
-        self.sel_ext.wait_and_click(**kwargs)
+        self.sel_ext.wait_and_click(self.driver, **kwargs)
 
     @property
     def locker_console_menu(self):
@@ -49,7 +49,7 @@ class NavigationMenu:
 
     def click_locker_console_menu(self):
         kwargs = self.sel_ext.get_kwargs_from_locator(self.DEVELOPER_GUIDE_MENU_LOCATOR)
-        self.sel_ext.wait_and_click(**kwargs)
+        self.sel_ext.wait_and_click(self.driver, **kwargs)
 
     @property
     def locker_api_menu(self):
@@ -57,7 +57,7 @@ class NavigationMenu:
 
     def click_locker_api_menu(self):
         kwargs = self.sel_ext.get_kwargs_from_locator(self.LOCKER_API_MENU_LOCATOR)
-        self.sel_ext.wait_and_click(**kwargs)
+        self.sel_ext.wait_and_click(self.driver, **kwargs)
 
     @property
     def playground_menu(self):
@@ -65,4 +65,4 @@ class NavigationMenu:
 
     def click_playground_menu(self):
         kwargs = self.sel_ext.get_kwargs_from_locator(self.PLAYGROUND_MENU_LOCATOR)
-        self.sel_ext.wait_and_click(**kwargs)
+        self.sel_ext.wait_and_click(self.driver, **kwargs)

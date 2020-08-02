@@ -61,16 +61,18 @@ class Element:
     def get_attribute(self, attribute):
         return self.we.get_attribute(attribute)
 
-    def click(self):
-        self.we.click()
+    def click(self, driver):
+        try:
+            self.we.click()
+        except sel_exceptions.JavascriptException:
+            driver.execute_script("arguments[0].click();", self.we)
 
     def send_keys(self, keys):
         self.we.send_keys(keys)
 
     def aria_dropdown_open(self, driver, aria_dropdown):
-        aria_dropdown.click()
-        driver.execute_script("arguments[0].setAttribute('aria-expanded', arguments[1]);",
-                                   Element(aria_dropdown).we, "true")
+        Element(aria_dropdown).click(driver)
+        driver.execute_script("arguments[0].setAttribute('aria-expanded', arguments[1]);",Element(aria_dropdown).we, "true")
 
 
 class Locator:
@@ -249,18 +251,18 @@ class SeleniumExtension:
         except sel_exceptions.TimeoutException:
             return f"Element not present after {appear_timeout}"
 
-    def wait_and_click(self, by, value):
+    def wait_and_click(self, driver, by, value):
         kwargs = {"by": by,
                   "value": value}
-        self.wait_for_element(10, **kwargs).click()
+        Element(self.wait_for_element(10, **kwargs)).click(driver)
 
     def get_kwargs_from_locator(self,locator):
         kwargs = {"by": locator.by,
                   "value": locator.value}
         return kwargs
 
-    def click_and_wait_element(self, element_to_click, element_to_wait):
-        element_to_click.click()
+    def click_and_wait_element(self, driver, element_to_click, element_to_wait):
+        element_to_click.click(driver)
         kwargs = self.get_kwargs_from_locator(element_to_wait.WAIT_ELEMENT_LOCATOR)
         self.wait_for_element(10, **kwargs)
         return

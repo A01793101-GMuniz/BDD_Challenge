@@ -126,4 +126,4 @@ class Datatable:
             self.NavigateDown(movement_keys)
 
     def click_playground_button(self):
-        self.playground_button.click()
+        Element(self.playground_button).click(self.driver)
