@@ -15,7 +15,7 @@ class PlaygroundPreview:
 
         # This is inside first PLAYGROUND_IFRAME_LOCATOR
         self.SECOND_PREVIEW_IFRAME_LOCATOR = Locator(self.driver, By.XPATH,
-                                                     "/html/body/playground-app/main/playground-split"
+                                                     "//html/body/playground-app/main/playground-split"
                                                      "-pane/div/slot/playground-preview/div/iframe["
                                                      "@name='preview']")
 

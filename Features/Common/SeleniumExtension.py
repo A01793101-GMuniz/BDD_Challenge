@@ -72,7 +72,8 @@ class Element:
 
     def aria_dropdown_open(self, driver, aria_dropdown):
         Element(aria_dropdown).click(driver)
-        driver.execute_script("arguments[0].setAttribute('aria-expanded', arguments[1]);",Element(aria_dropdown).we, "true")
+        driver.execute_script("arguments[0].setAttribute('aria-expanded', arguments[1]);",Element(aria_dropdown).we,
+                              "true")
 
 
 class Locator:
@@ -106,6 +107,7 @@ class Locator:
 
     @property
     def value(self):
+        # This will format the XPAT in case path contains an id with multiple elements like "data_table_id1 = xxx "
         formatted_value = self.value_
         if self.value_.__contains__("{idx}"):
             if self.by_ == By.ID:
@@ -140,7 +142,7 @@ class Locator:
                     xpath = " and ".join(list_values)
                     formatted_value = self.value_.replace(match.group(), "({})".format(xpath))
 
-        # Formats "OR" locator values
+        # Or in case the XPATH contains format "OR" in locator values
         if self.value_.__contains__("||"):
             if self.by_ == By.ID:
                 value_split = self.value_.replace(" ", "").split("||")
@@ -247,6 +249,8 @@ class SeleniumExtension:
             WebDriverWait(self, appear_timeout).until(EC.presence_of_element_located((_LOCATOR_MAP[k], value)))
             WebDriverWait(self, appear_timeout).until(EC.visibility_of_element_located((_LOCATOR_MAP[k], value)))
             WebDriverWait(self, appear_timeout).until(EC.element_to_be_clickable((_LOCATOR_MAP[k], value)))
+            if "preview" in value:
+                time.sleep(5)
             return self.find_element(_LOCATOR_MAP[k], value)
         except sel_exceptions.TimeoutException:
             return f"Element not present after {appear_timeout}"
@@ -261,10 +265,10 @@ class SeleniumExtension:
                   "value": locator.value}
         return kwargs
 
-    def click_and_wait_element(self, driver, element_to_click, element_to_wait):
-        element_to_click.click(driver)
-        kwargs = self.get_kwargs_from_locator(element_to_wait.WAIT_ELEMENT_LOCATOR)
-        self.wait_for_element(10, **kwargs)
-        return
+    # def click_and_wait_element(self, driver, element_to_click, element_to_wait):
+    #     element_to_click.click(driver)
+    #     kwargs = self.get_kwargs_from_locator(element_to_wait.WAIT_ELEMENT_LOCATOR)
+    #     self.wait_for_element(10, **kwargs)
+    #     return
 
 

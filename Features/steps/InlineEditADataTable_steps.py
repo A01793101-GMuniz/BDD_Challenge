@@ -16,8 +16,8 @@ def get_driver(context):
 
 @when('I open salesforce developers application')
 def open_salesforce(context):
-    use_fixture(open_web_page,context, "https://developer.salesforce.com/docs/component-library/documentation/en/48.0"
-                                       "/lwc")
+    use_fixture(open_web_page, context, "https://developer.salesforce.com/docs/component-library/documentation/en/48.0"
+                                        "/lwc")
 
 
 @when('Navigate to Component Reference Tab')
@@ -66,12 +66,16 @@ def edit_all_row_records(context, id_value, label, website, phone, close_at, bal
 @then('I must validate the changes I have done in the table are present')
 def assert_data(context):
     test_assert = TestAssert()
+    # Assert Data Types
+    new_data_values = list(context.new_row_data.values())
+    test_assert.test_assert_type_list_elements(new_data_values, f"Variable type is not the expected for element:  "
+    f"{type(new_data_values)}")
     # Assert Data in Datatable is the one user sent
-    test_assert.test_assert_entered_row_data\
+    test_assert.test_assert_equal_entered_row_data \
         (context.new_row_data, context.actual_new_data,
          f"Data sent from test to modify row id {context.new_row_data['id'] + 1} "
-                                                  f"is not on Datatable or it's incomplete")
-    test_assert.test_assert_row_data_has_changed\
+         f"is not on Datatable or it's incomplete")
+    test_assert.test_assert_not_equal_row_data_has_changed \
         (context.actual_new_data, context.old_row_data,
          f"Wrong or incomplete data change on row {context.new_row_data['id'] + 1}")
     context.driver.close()
