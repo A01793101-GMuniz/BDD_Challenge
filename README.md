@@ -22,3 +22,7 @@ Once the pre-requisites are met user can run Framework by:
   2.- Running run_behave.py file which is located on "<PROJECT_PATH>\Features\Common\bin\run_behave.py"
         This file will display a small and simple UI prompting the user to select the feature file and a browser, 
         Once user clicks start button the feature will start to run.
+	
+
+To generate allure report file run below command
+	*	allure serve <PATH_TO_PROJECT>\Reports\results
