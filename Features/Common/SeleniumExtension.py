@@ -107,51 +107,8 @@ class Locator:
 
     @property
     def value(self):
-        # This will format the XPAT in case path contains an id with multiple elements like "data_table_id1 = xxx "
+        # This will format the XPATHin case path contains an id with multiple elements like "data_table_id1 = xxx "
         formatted_value = self.value_
-        if self.value_.__contains__("{idx}"):
-            if self.by_ == By.ID:
-                value_split = self.value_.split("{idx}")
-                starts_with = "starts-with(@id,'{}')".format(value_split[0])
-                ends_with = "substring(@id, string-length(@id)-string-length('{0}')+1)='{0}'" \
-                    .format(value_split[-1])
-                list_values = [starts_with]
-                if len(value_split) > 2:
-                    contains = ["contains(@id, '{}')".format(v) for v in value_split[1:-1]]
-                    list_values.extend(contains)
-
-                list_values.append(ends_with)
-                xpath = " and ".join(list_values)
-                formatted_value = ".//*[{}]".format(xpath)
-            elif self.by_ == By.XPATH:
-                regex = r"\@(.*?)=\'(.*?)\'"
-                matches = re.finditer(regex, self.value_)
-                for matchNum, match in enumerate(matches):
-                    by_locator = match.groups()[0]
-                    value_split = match.groups()[1].split("{idx}")
-                    starts_with = "starts-with(@{by},'{starts}')".format(by=by_locator, starts=value_split[0])
-                    ends_with = "substring(@{by}, string-length(@{by})-string-length('{ends}')+1)='{ends}'" \
-                        .format(by=by_locator, ends=value_split[-1])
-                    list_values = [starts_with]
-
-                    if len(value_split) > 2:
-                        contains = ["contains(@{by}, '{val}')".format(by=by_locator, val=v) for v in value_split[1:-1]]
-                        list_values.extend(contains)
-                    list_values.append(ends_with)
-
-                    xpath = " and ".join(list_values)
-                    formatted_value = self.value_.replace(match.group(), "({})".format(xpath))
-
-        # Or in case the XPATH contains format "OR" in locator values
-        if self.value_.__contains__("||"):
-            if self.by_ == By.ID:
-                value_split = self.value_.replace(" ", "").split("||")
-                ids_ = "' or @id='".join(value_split)
-                formatted_value = ".//*[@id='{ids}']".format(ids=ids_)
-            elif self.by_ == By.XPATH:
-                value_split = self.value_.split("||")
-                ids_ = "' or @id='".join(value_split)
-                formatted_value = "{ids}".format(ids=ids_)
 
         return formatted_value
 
