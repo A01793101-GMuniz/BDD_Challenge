@@ -25,4 +25,5 @@ Once the pre-requisites are met user can run Framework by:
 	
 
 To generate allure report file run below command
-	*	allure serve <PATH_TO_PROJECT>\Reports\results
+
+	A)	allure serve <PATH_TO_PROJECT>\Reports\results
