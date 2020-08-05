@@ -5,7 +5,9 @@ This is a project for Behavior Driven Development which needs some pre-installed
 
 
   	A) Install necessary packages by running command: pip install -r requirements.txt
-  	B) In case of wanting an html report generated: Install allure-commandline (provided under venv folder as zip) 
+  	B) You need to have WebDriver on PATH already configured or modified the path in Features\environment.py and add the Path to the file in your computer
+		Driver for Mozilla, Chrome and Edge are provided on ROOT_FOLDER\bin\
+	B) In case of wanting an html report generated: Install allure-commandline (provided under venv folder as zip) 
   
   
 Once the pre-requisites are met user can run Framework by:
