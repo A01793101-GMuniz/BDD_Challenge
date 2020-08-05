@@ -1,5 +1,5 @@
 # Required Instalable packages
 # Run command: pip install -r requirements.txt
 selenium==3.141.0
-behave==2.8.17
-allure-behave==2.8.17
+behave
+allure-behave
