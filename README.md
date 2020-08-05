@@ -7,7 +7,9 @@ This is a project for Behavior Driven Development which needs some pre-installed
   	A) Install necessary packages by running command: pip install -r requirements.txt
   	B) You need to have WebDriver on PATH already configured or modified the path in Features\environment.py and add the Path to the file in your computer
 		Driver for Mozilla, Chrome and Edge are provided on ROOT_FOLDER\bin\
-	B) In case of wanting an html report generated: Install allure-commandline (provided bin venv folder as zip) 
+	B) In case of wanting an html report generated: Install allure-commandline (provided bin folder as zip) and add parameter:
+		-f allure_behave.formatter:AllureFormatter -o {feature_path}/Reports/results/{report_path}
+	   This will generate json file with the report information
   
   
 Once the pre-requisites are met user can run Framework by:
@@ -26,6 +28,6 @@ Once the pre-requisites are met user can run Framework by:
         Once user clicks start button the feature will start to run.
 	
 
-To generate allure report file run below command
+If user wants to generate allure report html file run below command
 
 	A)	allure serve <PATH_TO_PROJECT>\Reports\results
