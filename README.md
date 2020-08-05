@@ -4,11 +4,8 @@ BDD-Selenium Framework
 This is a project for Behavior Driven Development which needs some pre-installed pre-requisites to be run on your environment:
 
 
-  	1.- Install behave module (pip install behave)
-	2.- Install selenium module (pip install selenium)
-	3.- Install Gherkin plugin for pycharm to improve editing of .feature file
-	4.- Install allure package in python (pip install allure-behave)
-  	5.- In case of wanting an html report generated: Install allure-commandline (provided under venv folder as zip) 
+  	A) Install necessary packages by running command: pip install -r requirements.txt
+  	B) In case of wanting an html report generated: Install allure-commandline (provided under venv folder as zip) 
   
   
 Once the pre-requisites are met user can run Framework by:
