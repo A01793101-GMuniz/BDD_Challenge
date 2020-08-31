@@ -46,6 +46,7 @@ class Datatable:
     def __init__(self, driver):
         self.driver = driver
         self.sel_ext = SeleniumExtension(self.driver)
+        self.EXAMPLE_LABEL_LOCATOR = Locator(self.driver, By.XPATH, "//label[contains(text(),'Example')]")
         self.EXAMPLE_DROPDOWN_LOCATOR = Locator(self.driver, By.XPATH, "//div[@class='slds-combobox__form-element "
                                                                        "slds-input-has-icon "
                                                                        "slds-input-has-icon_right']/..")
@@ -55,8 +56,16 @@ class Datatable:
                                                       "slds-input-has-icon "
                                                       "slds-input-has-icon_right']/input")
 
+        # self.EXAMPLE_DROPDOWN_INPUT_LOCATOR = Locator(self.driver, By.CSS_SELECTOR,
+        #                                               self.example_label.get_attribute('for'))
+
         # PlayGround PreviewSection on Datatable
         self.PLAYGROUND_BUTTON_LOCATOR = Locator(self.driver, By.XPATH, "//button[text()='Open in Playground']")
+
+    @property
+    def example_label(self):
+        self.sel_ext.wait_for_element(10, **self.sel_ext.get_kwargs_from_locator(self.EXAMPLE_LABEL_LOCATOR))
+        return self.EXAMPLE_LABEL_LOCATOR.get_element()
 
     @property
     def example_dropdown(self):
@@ -87,18 +96,23 @@ class Datatable:
                            "Data Table with Sortable Columns": 4}
         return example_options[value]
 
-    def NavigateUp(self, movement_keys):
-        Element(self.example_dropdown).aria_dropdown_open(self.driver, self.example_dropdown)
-        for i in range(0, movement_keys + 1):
-            self.example_dropdown_input.send_keys(Keys.UP)
-        self.example_dropdown_input.send_keys(Keys.ENTER)
-        time.sleep(2)
-
-    def NavigateDown(self, movement_keys):
-        Element(self.example_dropdown).aria_dropdown_open(self.driver, self.example_dropdown)
-        for i in range(0, movement_keys + 1):
-            self.example_dropdown_input.send_keys(Keys.DOWN)
-        self.example_dropdown_input.send_keys(Keys.ENTER)
+    # def NavigateUp(self, movement_keys):
+    #     Element(self.example_dropdown).aria_dropdown_open(self.driver, self.example_dropdown)
+    #     for i in range(0, movement_keys + 1):
+    #         self.example_dropdown_input.send_keys(Keys.UP)
+    #     self.example_dropdown_input.send_keys(Keys.ENTER)
+    #     time.sleep(2)
+#
+    def choose_droopdown_value(self, movement_keys):
+        example_dropdown_elements = self.example_dropdown_input.find_elements(By.XPATH, "//lightning-base-combobox"
+                                                                                         "-item") 
+        wanted_element = example_dropdown_elements[movement_keys]
+        self.driver.execute_script("arguments[0].click()", Element(wanted_element).we)
+        
+        # Element(self.example_dropdown).aria_dropdown_open(self.driver, self.example_dropdown)
+        # for i in range(0, movement_keys + 1):
+        #     self.example_dropdown_input.send_keys(Keys.DOWN)
+        # self.example_dropdown_input.send_keys(Keys.ENTER)
         time.sleep(2)
 
     def wait_for_preview_frame_to_load(self, preview_section):
@@ -111,19 +125,12 @@ class Datatable:
         self.driver.switch_to.default_content()
 
     def choose_example_dropdown_value(self, value):
-        # locator_id = self.example_dropdown.get_attribute('id')
-        # self.driver.execute_script("arguments[0].setAttribute('aria-activedescendant', arguments[1]);",
-        #                            Element(self.example_dropdown).we, f"input-214-{locator_id}-214")
         preview_section = PlaygroundPreview(self.driver)
         self.wait_for_preview_frame_to_load(preview_section)
 
         current_value = self.get_current_aria_descendant()
         choosen_value = self.select_aria_descendant(value)
-        movement_keys = choosen_value - current_value
-        if movement_keys < 0:
-            self.NavigateUp(abs(movement_keys))
-        elif movement_keys > 0:
-            self.NavigateDown(movement_keys)
+        self.choose_droopdown_value(choosen_value)
 
     def click_playground_button(self):
         Element(self.playground_button).click(self.driver)

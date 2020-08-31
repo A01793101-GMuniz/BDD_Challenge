@@ -35,11 +35,13 @@ class Element:
                 pass
 
     def find_element(self, by_=By.ID, value=None, locator=None):
+        # Used in wrapper to find Element using parent: WebDriver
         if isinstance(by_, Locator):
             locator = by_
         if locator is not None:
             by_ = locator.by
             value = locator.value
+        # Wrapped WebElement using Find Element of WebDriver Classed with parameters extracted from Class
         return Element(self.we.find_element(by_, value))
 
     def find_elements(self, by=By.ID, value=None, locator=None):
@@ -74,6 +76,15 @@ class Element:
         Element(aria_dropdown).click(driver)
         driver.execute_script("arguments[0].setAttribute('aria-expanded', arguments[1]);",Element(aria_dropdown).we,
                               "true")
+
+    def highlight(self, driver, element):
+        original_style = element.get_attribute('style')
+        highlight_style = "border: 2px solid red !important;"
+        driver.execute_script("arguments[0].setAttribute('style', arguments[1]);",
+                                   Element(element).we, original_style + highlight_style)
+        time.sleep(2)
+        driver.execute_script("arguments[0].setAttribute('style', arguments[1]);",
+                              Element(element).we, original_style)
 
 
 class Locator:
@@ -112,6 +123,7 @@ class Locator:
 
         return formatted_value
 
+    # To Format the element received on the LOCATOR_MAP and send it as a SEL_EXT Object to find it
     def get_element(self) -> Element:
         # If there's no index on the element I use find element
         if self.index is None:
@@ -140,7 +152,9 @@ class SeleniumExtension:
 
     def get_element(self, by_, value_):
         try:
+            # Web Element find_element Method
             element = self.driver.find_element(by_, value_)
+            # Return Web Element Wrapped
             return Element(element).we
         except sel_exceptions.NoSuchElementException:
             raise
@@ -162,6 +176,7 @@ class SeleniumExtension:
             Exception("Element is not visible")
 
     def find_element(self, by_=By.ID, value=None, locator: Locator = None):
+        # Get Element using get element on a Element object
         if isinstance(by_, Locator):
             locator = by_
         if locator is not None:
@@ -206,8 +221,8 @@ class SeleniumExtension:
             WebDriverWait(self, appear_timeout).until(EC.presence_of_element_located((_LOCATOR_MAP[k], value)))
             WebDriverWait(self, appear_timeout).until(EC.visibility_of_element_located((_LOCATOR_MAP[k], value)))
             WebDriverWait(self, appear_timeout).until(EC.element_to_be_clickable((_LOCATOR_MAP[k], value)))
-            if "preview" in value:
-                time.sleep(5)
+            #if "preview" in value:
+            #    time.sleep(5)
             return self.find_element(_LOCATOR_MAP[k], value)
         except sel_exceptions.TimeoutException:
             return f"Element not present after {appear_timeout}"

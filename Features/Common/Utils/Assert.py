@@ -1,9 +1,6 @@
 
 class TestAssert:
 
-    def __init__(self):
-        self.true_assert_count = 0
-
     def test_assert_equal_entered_row_data(self, dict1, dict2, msg=None):
         if len(dict1) == len(dict2):
             for key in dict1.keys():

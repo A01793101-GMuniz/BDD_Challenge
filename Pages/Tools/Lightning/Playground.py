@@ -17,7 +17,7 @@ class Playground:
 
         self.FULL_PLAYGROUND_PREVIEW_TABLE_IFRAME_LOCATOR = \
             Locator(self.driver, By.XPATH, "/html/body/playground-app/playground-header/div/div["
-                                           "2]/slot/main/playground-splitter/div[2]/slot/playground-split-pane/div["
+                                           "2]/slot/main/playground-splitter/div{idx}/slot/playground-split-pane/div["
                                            "3]/slot/playground-preview/div[2]/iframe")
 
         self.FULL_PLAYGROUND_DATA_TABLE = Locator(self.driver, By.XPATH, "/html/body/main/c-withinlineedit/div"
@@ -103,6 +103,9 @@ class Playground:
         kwargs = self.sel_ext.get_kwargs_from_locator(self.FULL_PLAYGROUND_PREVIEW_TABLE_IFRAME_LOCATOR)
         self.sel_ext.wait_for_element(60, **kwargs)
         self.driver.switch_to.frame(self.full_playground_preview_table_iframe)
+        if new_row_data["id"] > 9:
+            for i in range (9, new_row_data["id"] - 2):
+                self.full_playground_data_table[i].send_keys(Keys.DOWN)
         row_element = Element(self.full_playground_data_table[new_row_data["id"]]).we
         dict_of_td_editable_columns = {2: "Label",
                                        3: "Website",
@@ -157,10 +160,11 @@ class Playground:
                 self.date_picker_input = value_to_edit
                 self.time_value_input = time_value
                 self.time_value_input.send_keys(Keys.TAB)
-                try:
-                    self.time_value_input.send_keys(Keys.TAB)
-                except sel_exc.NoSuchElementException:
-                        pass
+                if self.driver.capabilities["browserName"].capitalize() == "Firefox":
+                    try:
+                        self.time_value_input.send_keys(Keys.TAB)
+                    except sel_exc.NoSuchElementException:
+                            pass
             time.sleep(2)
 
             return True

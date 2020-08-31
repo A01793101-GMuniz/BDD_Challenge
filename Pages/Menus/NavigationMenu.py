@@ -10,8 +10,8 @@ class NavigationMenu:
         self.driver = driver
         self.PAGE_LOCATOR = Locator(self.driver, By.XPATH, "//a[contains(text(),'All Rights reserved')]")
         self.NAVIGATION_BAR_ID = Locator(self.driver, By.ID, "skip-target-nav-3")
-        self.COMPONENT_REFERENCE_MENU_LOCATOR = Locator(self.driver, By.XPATH, "//span[contains(text(),'Component "
-                                                                               "Reference')]/..")
+        self.COMPONENT_REFERENCE_MENU_LOCATOR = Locator(self.driver, By.XPATH,
+                                                        "//span[contains(text(),'Component Reference')]/..")
         self.DEVELOPER_GUIDE_MENU_LOCATOR = Locator(self.driver, By.XPATH, "//span[contains(text(),'Developer "
                                                                            "Guide')]/..")
         self.LOCKER_CONSOLE_MENU_LOCATOR = Locator(self.driver, By.XPATH,
